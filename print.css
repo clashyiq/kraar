@@ -1,0 +1,357 @@
+/**
+ * Teacher AI Print Styles
+ * أنماط الطباعة لتطبيق المدرس AI
+ */
+
+@media print {
+  /* Reset and General Styles */
+  * {
+    -webkit-print-color-adjust: exact !important;
+    color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  /* Hide non-printable elements */
+  .sidebar-panel,
+  .app-header,
+  .input-area,
+  .loading-overlay,
+  .modal-overlay,
+  .status-area,
+  .sidebar-toggle,
+  .header-btn,
+  .quick-actions,
+  .input-container,
+  .welcome-section,
+  .typing-indicator,
+  .message-meta,
+  .file-actions,
+  .upload-zone,
+  .stats-section,
+  .settings-section {
+    display: none !important;
+  }
+
+  /* Page Setup */
+  @page {
+    margin: 2cm;
+    size: A4;
+    @top-center {
+      content: "المدرس AI - تاريخ المحادثة";
+      font-family: 'Cairo', sans-serif;
+      font-size: 12pt;
+      font-weight: 600;
+    }
+    @bottom-right {
+      content: counter(page) " من " counter(pages);
+      font-family: 'Cairo', sans-serif;
+      font-size: 10pt;
+    }
+    @bottom-left {
+      content: "تاريخ الطباعة: " attr(data-print-date);
+      font-family: 'Cairo', sans-serif;
+      font-size: 10pt;
+    }
+  }
+
+  /* Body and Container */
+  body {
+    font-family: 'Cairo', 'Times New Roman', serif !important;
+    font-size: 12pt !important;
+    line-height: 1.6 !important;
+    color: #000 !important;
+    background: white !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  .app-container {
+    display: block !important;
+    width: 100% !important;
+    height: auto !important;
+    overflow: visible !important;
+  }
+
+  .main-content {
+    width: 100% !important;
+    height: auto !important;
+    overflow: visible !important;
+    display: block !important;
+  }
+
+  /* Chat Interface */
+  .chat-interface {
+    display: block !important;
+    height: auto !important;
+    overflow: visible !important;
+  }
+
+  .messages-container {
+    display: block !important;
+    height: auto !important;
+    overflow: visible !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    background: white !important;
+  }
+
+  /* Print Header */
+  .chat-interface::before {
+    content: "المدرس AI - سجل المحادثة";
+    display: block;
+    font-size: 18pt;
+    font-weight: 700;
+    text-align: center;
+    margin-bottom: 20pt;
+    padding-bottom: 10pt;
+    border-bottom: 2pt solid #000;
+    color: #000;
+  }
+
+  /* Messages */
+  .message {
+    margin-bottom: 15pt !important;
+    page-break-inside: avoid;
+    border: 1pt solid #ddd;
+    border-radius: 8pt;
+    padding: 10pt;
+    background: white !important;
+  }
+
+  .message.user {
+    margin-right: 20% !important;
+    background: #f8f9fa !important;
+    border-right: 4pt solid #667eea !important;
+  }
+
+  .message.assistant {
+    margin-left: 20% !important;
+    background: #ffffff !important;
+    border-left: 4pt solid #28a745 !important;
+  }
+
+  .message-bubble {
+    background: transparent !important;
+    border: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    box-shadow: none !important;
+    color: #000 !important;
+    font-size: 11pt !important;
+    line-height: 1.6 !important;
+    max-width: none !important;
+    border-radius: 0 !important;
+  }
+
+  /* Message Labels */
+  .message.user .message-bubble::before {
+    content: "المستخدم: ";
+    font-weight: 700;
+    color: #667eea;
+    display: block;
+    margin-bottom: 5pt;
+  }
+
+  .message.assistant .message-bubble::before {
+    content: "المدرس AI: ";
+    font-weight: 700;
+    color: #28a745;
+    display: block;
+    margin-bottom: 5pt;
+  }
+
+  /* Message Content Formatting */
+  .message-bubble strong {
+    font-weight: 700 !important;
+    color: #000 !important;
+  }
+
+  .message-bubble em {
+    font-style: italic !important;
+  }
+
+  .message-bubble code {
+    font-family: 'Courier New', monospace !important;
+    background: #f8f9fa !important;
+    padding: 2pt 4pt !important;
+    border-radius: 3pt !important;
+    font-size: 10pt !important;
+  }
+
+  /* Sources */
+  .message-sources {
+    margin-top: 10pt !important;
+    padding-top: 8pt !important;
+    border-top: 1pt solid #ddd !important;
+    font-size: 10pt !important;
+    color: #666 !important;
+  }
+
+  .message-sources strong {
+    color: #000 !important;
+  }
+
+  /* Lists and Content */
+  ul, ol {
+    margin: 8pt 0 !important;
+    padding-right: 20pt !important;
+  }
+
+  li {
+    margin-bottom: 4pt !important;
+  }
+
+  p {
+    margin: 8pt 0 !important;
+  }
+
+  /* Tables (if any) */
+  table {
+    width: 100% !important;
+    border-collapse: collapse !important;
+    margin: 10pt 0 !important;
+    font-size: 10pt !important;
+  }
+
+  th, td {
+    border: 1pt solid #000 !important;
+    padding: 6pt !important;
+    text-align: right !important;
+  }
+
+  th {
+    background: #f8f9fa !important;
+    font-weight: 700 !important;
+  }
+
+  /* Links */
+  a {
+    color: #000 !important;
+    text-decoration: underline !important;
+  }
+
+  a::after {
+    content: " (" attr(href) ")";
+    font-size: 9pt;
+    color: #666;
+  }
+
+  /* Page Breaks */
+  .message {
+    break-inside: avoid;
+  }
+
+  .message.user {
+    break-after: avoid;
+  }
+
+  /* Long content handling */
+  .message-bubble {
+    overflow: visible !important;
+    word-wrap: break-word !important;
+    hyphens: auto !important;
+  }
+
+  /* Print Info Footer */
+  .chat-interface::after {
+    content: "تم إنشاء هذا التقرير بواسطة تطبيق المدرس AI";
+    display: block;
+    margin-top: 30pt;
+    padding-top: 15pt;
+    border-top: 1pt solid #ddd;
+    font-size: 9pt;
+    color: #666;
+    text-align: center;
+    page-break-inside: avoid;
+  }
+
+  /* Utilities */
+  .print-only {
+    display: block !important;
+  }
+
+  .no-print {
+    display: none !important;
+  }
+
+  /* RTL Support */
+  body[dir="rtl"] {
+    direction: rtl !important;
+    text-align: right !important;
+  }
+
+  /* Color Adjustments for Better Print Quality */
+  .message.user {
+    background: #f0f0f0 !important;
+  }
+
+  .message.assistant {
+    background: #fafafa !important;
+  }
+
+  /* Ensure good contrast for printing */
+  * {
+    color: #000 !important;
+  }
+
+  .message-bubble {
+    color: #000 !important;
+  }
+
+  /* Special handling for long URLs */
+  a[href^="http"]::after {
+    word-break: break-all;
+  }
+
+  /* Avoid orphans and widows */
+  p, .message-bubble {
+    orphans: 3;
+    widows: 3;
+  }
+
+  /* Ensure proper spacing */
+  .message + .message {
+    margin-top: 15pt !important;
+  }
+
+  /* Handle empty or very short messages */
+  .message-bubble:empty::after {
+    content: "[رسالة فارغة]";
+    color: #999 !important;
+    font-style: italic;
+  }
+}
+
+/* Print Preview Styles */
+@media screen and (max-width: 0) {
+  /* This creates print preview styles when CSS is loaded for preview */
+  .print-preview .sidebar-panel,
+  .print-preview .app-header,
+  .print-preview .input-area {
+    display: none;
+  }
+  
+  .print-preview .main-content {
+    width: 100%;
+  }
+  
+  .print-preview .messages-container {
+    background: white;
+    padding: 20px;
+  }
+}
+
+/* High contrast mode for accessibility */
+@media print and (prefers-contrast: high) {
+  .message {
+    border: 2pt solid #000 !important;
+  }
+  
+  .message.user {
+    background: #e0e0e0 !important;
+  }
+  
+  .message.assistant {
+    background: #f5f5f5 !important;
+  }
+}

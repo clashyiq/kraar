@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>المدرس AI - مساعدك الذكي للدراسة</title>
+    <!-- External Libraries -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@200;300;400;500;600;700;800;900&family=Tajawal:wght@200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/print.css') }}" media="print">
+    <link rel="manifest" href="{{ url_for('static', filename='manifest.json') }}">
+   
+    <link rel="serviceworker" href="{{ url_for('static', filename='js/sw.js') }}">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='images/favicon.ico') }}">
+</head>
+<body>
+    <!-- Main App Container -->
+    <div class="app-container" id="appContainer">
+        <!-- Sidebar Panel -->
+        <aside class="sidebar-panel" id="sidebarPanel">
+            <div class="sidebar-header">
+                <div class="sidebar-logo">
+                    <div class="logo-icon-mini">
+                        <i class="fas fa-brain"></i>
+                    </div>
+                    <span class="logo-text-mini">المدرس AI</span>
+                </div>
+                <button class="sidebar-close" id="sidebarClose">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <!-- File Upload Section -->
+            <div class="upload-section">
+                <div class="section-title">
+                    <i class="fas fa-upload"></i>
+                    <span>رفع الملازم</span>
+                </div>
+                <div class="upload-zone" id="uploadZone">
+                    <div class="upload-content">
+                        <div class="upload-icon">
+                            <i class="fas fa-cloud-upload-alt"></i>
+                        </div>
+                        <p class="upload-text">اسحب الملفات هنا</p>
+                        <p class="upload-subtext">أو انقر للاختيار</p>
+                        <div class="supported-formats">
+                            <span>PDF</span>
+                            <span>DOC</span>
+                            <span>DOCX</span>
+                            <span>TXT</span>
+                        </div>
+                    </div>
+                    <input type="file" id="fileInput" accept=".txt,.pdf,.doc,.docx,.rtf" multiple hidden>
+                </div>
+            </div>
+
+            <!-- Files List -->
+            <div class="files-section">
+                <div class="section-title">
+                    <i class="fas fa-folder-open"></i>
+                    <span>الملازم المحفوظة</span>
+                    <span class="files-count" id="filesCount">0</span>
+                </div>
+                <div class="files-list" id="filesList">
+                    <div class="empty-state">
+                        <i class="fas fa-file-alt"></i>
+                        <p>لا توجد ملفات بعد</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Statistics -->
+            <div class="stats-section">
+                <div class="section-title">
+                    <i class="fas fa-chart-line"></i>
+                    <span>الإحصائيات</span>
+                </div>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-value" id="totalQueries">0</div>
+                        <div class="stat-label">الأسئلة</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="totalDocuments">0</div>
+                        <div class="stat-label">الملازم</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Status Area -->
+            <div id="statusArea" class="status-area"></div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Header -->
+            <header class="app-header">
+                <div class="header-left">
+                    <button class="sidebar-toggle" id="sidebarToggle">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                    <div class="app-title">
+                        <div class="title-icon">
+                            <i class="fas fa-graduation-cap"></i>
+                        </div>
+                        <div class="title-text">
+                            <h1>المدرس AI</h1>
+                            <p>مساعدك الذكي للتعلم</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="header-right">
+                    <div class="connection-status" id="connectionStatus">
+                        <div class="status-dot online"></div>
+                        <span>متصل</span>
+                    </div>
+                    <button class="header-btn" id="settingsBtn" title="الإعدادات">
+                        <i class="fas fa-cog"></i>
+                    </button>
+                </div>
+            </header>
+
+            <!-- Chat Interface -->
+            <div class="chat-interface">
+                <!-- Welcome Message -->
+                <div class="welcome-section" id="welcomeSection">
+                    <div class="welcome-avatar">
+                        <i class="fas fa-robot"></i>
+                    </div>
+                    <h2 class="welcome-title">مرحباً بك في المدرس AI</h2>
+                    <p class="welcome-subtitle">مساعدك الذكي للدراسة والتعلم</p>
+                    <div class="welcome-features">
+                        <div class="feature-item">
+                            <i class="fas fa-upload"></i>
+                            <span>ارفع ملازمك الدراسية</span>
+                        </div>
+                        <div class="feature-item">
+                            <i class="fas fa-question-circle"></i>
+                            <span>اسأل أي سؤال</span>
+                        </div>
+                        <div class="feature-item">
+                            <i class="fas fa-search"></i>
+                            <span>ابحث في المحتوى</span>
+                        </div>
+                        <div class="feature-item">
+                            <i class="fas fa-microphone"></i>
+                            <span>أدخل الأسئلة صوتياً</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Messages Container -->
+                <div class="messages-container" id="messagesContainer">
+                    <!-- Messages will be loaded here -->
+                </div>
+
+                <!-- Input Area -->
+                <div class="input-area">
+                    <div class="input-container">
+                        <div class="input-wrapper">
+                            <textarea 
+                                class="message-input" 
+                                id="messageInput" 
+                                placeholder="اكتب سؤالك هنا..."
+                                rows="1"
+                            ></textarea>
+                            <div class="input-actions">
+                                <button class="input-btn mic-btn" id="micButton" title="التسجيل الصوتي">
+                                    <i class="fas fa-microphone"></i>
+                                </button>
+                                <button class="input-btn attach-btn" id="attachButton" title="رفع ملف">
+                                    <i class="fas fa-paperclip"></i>
+                                </button>
+                                <button class="input-btn send-btn" id="sendButton" title="إرسال">
+                                    <i class="fas fa-paper-plane"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Quick Actions -->
+                    <div class="quick-actions" id="quickActions">
+                        <button class="quick-btn" data-text="ما هو">
+                            <i class="fas fa-question"></i>
+                            ما هو...؟
+                        </button>
+                        <button class="quick-btn" data-text="اشرح لي">
+                            <i class="fas fa-lightbulb"></i>
+                            اشرح لي...
+                        </button>
+                        <button class="quick-btn" data-text="اعط مثال على">
+                            <i class="fas fa-examples"></i>
+                            أعط مثال...
+                        </button>
+                        <button class="quick-btn" data-text="ما الفرق بين">
+                            <i class="fas fa-balance-scale"></i>
+                            ما الفرق...؟
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-content">
+            <div class="loading-spinner">
+                <div class="spinner-ring"></div>
+                <div class="spinner-ring"></div>
+                <div class="spinner-ring"></div>
+            </div>
+            <p class="loading-text">جاري المعالجة...</p>
+        </div>
+    </div>
+
+    <!-- Settings Modal -->
+    <div class="modal-overlay" id="settingsModal">
+        <div class="modal-container">
+            <div class="modal-header">
+                <h3>الإعدادات</h3>
+                <button class="modal-close" data-modal="settingsModal">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-content">
+                <div class="settings-section">
+                    <h4>الصوت والنطق</h4>
+                    <div class="setting-item">
+                        <label for="voiceSpeed">سرعة النطق</label>
+                        <div class="slider-container">
+                            <input type="range" id="voiceSpeed" min="0.3" max="1.5" step="0.1" value="0.8">
+                            <div class="slider-labels">
+                                <span>بطيء</span>
+                                <span>سريع</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="setting-item">
+                        <label class="toggle-label">
+                            <input type="checkbox" id="autoSpeak">
+                            <span class="toggle-slider"></span>
+                            النطق التلقائي للإجابات
+                        </label>
+                    </div>
+                    <div class="setting-item">
+                        <label for="arabicDialect">اللهجة العربية المفضلة</label>
+                        <select id="arabicDialect" class="select-input">
+                            <option value="ar-SA">السعودية</option>
+                            <option value="ar-EG">المصرية</option>
+                            <option value="ar-AE">الإماراتية</option>
+                            <option value="ar-JO">الأردنية</option>
+                            <option value="ar-LB">اللبنانية</option>
+                            <option value="ar-MA">المغربية</option>
+                        </select>
+                    </div>
+                    <div class="setting-item">
+                        <label class="toggle-label">
+                            <input type="checkbox" id="enableSpeechEnhancements" checked>
+                            <span class="toggle-slider"></span>
+                            تحسينات النطق العربي
+                        </label>
+                    </div>
+                </div>
+                
+                <div class="settings-section">
+                    <h4>المظهر</h4>
+                    <div class="setting-item">
+                        <label for="theme">السمة</label>
+                        <select id="theme" class="select-input">
+                            <option value="auto">تلقائي (حسب النظام)</option>
+                            <option value="light">فاتح</option>
+                            <option value="dark">داكن</option>
+                        </select>
+                    </div>
+                    <div class="setting-item">
+                        <label class="toggle-label">
+                            <input type="checkbox" id="highContrastMode">
+                            <span class="toggle-slider"></span>
+                            الوضع عالي التباين
+                        </label>
+                    </div>
+                </div>
+                
+                <div class="settings-section">
+                    <h4>الطباعة والنسخ</h4>
+                    <div class="setting-item">
+                        <label for="printFormat">تنسيق الطباعة</label>
+                        <select id="printFormat" class="select-input">
+                            <option value="detailed">مفصل (مع التاريخ والوقت)</option>
+                            <option value="simple">بسيط (النص فقط)</option>
+                            <option value="formatted">منسق (مع التنسيق)</option>
+                        </select>
+                    </div>
+                    <div class="setting-item">
+                        <label class="toggle-label">
+                            <input type="checkbox" id="includeSources" checked>
+                            <span class="toggle-slider"></span>
+                            تضمين المصادر عند الطباعة
+                        </label>
+                    </div>
+                </div>
+                
+                <div class="settings-section">
+                    <h4>متقدم</h4>
+                    <div class="setting-item">
+                        <label class="toggle-label">
+                            <input type="checkbox" id="saveHistory">
+                            <span class="toggle-slider"></span>
+                            حفظ تاريخ المحادثات
+                        </label>
+                    </div>
+                    <div class="setting-item">
+                        <button class="btn-secondary" id="clearAllData">
+                            <i class="fas fa-trash"></i>
+                            مسح جميع البيانات
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Search Modal -->
+    <div class="modal-overlay" id="searchModal">
+        <div class="modal-container">
+            <div class="modal-header">
+                <h3>البحث في الملازم</h3>
+                <button class="modal-close" data-modal="searchModal">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-content">
+                <div class="search-container">
+                    <div class="search-input-wrapper">
+                        <input type="text" id="searchInput" placeholder="ابحث في المحتوى..." class="search-input">
+                        <button class="search-btn" id="performSearch">
+                            <i class="fas fa-search"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="search-results" id="searchResults">
+                    <!-- Search results will be displayed here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.5.0/axios.min.js"></script>
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+    
+    <script>
+        // Initialize App
+        document.addEventListener('DOMContentLoaded', function() {
+            try {
+                window.teacherAI = new TeacherAI();
+                console.log('Teacher AI application loaded successfully');
+            } catch (error) {
+                console.error('Failed to initialize Teacher AI:', error);
+            }
+        });
+
+        // Service Worker Registration
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('/static/js/sw.js')
+                .then(registration => console.log('Service Worker registered'))
+                .catch(error => console.log('Service Worker registration failed'));
+        }
+    </script>
+</body>
+</html>
