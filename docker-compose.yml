@@ -1,0 +1,136 @@
+# Teacher AI Enhanced - Docker Compose Configuration
+# تطبيق المدرس AI المحسن - إعدادات Docker Compose
+
+version: '3.8'
+
+services:
+  # Main Application Service
+  app:
+    build: .
+    container_name: teacher-ai-enhanced
+    restart: unless-stopped
+    ports:
+      - "5000:5000"
+    environment:
+      - FLASK_ENV=production
+      - DATABASE_URL=postgresql://teacher_ai:secure_password@db:5432/teacher_ai_enhanced
+      - REDIS_URL=redis://redis:6379/0
+      - SECRET_KEY=${SECRET_KEY:-teacher-ai-enhanced-secret-key}
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
+    volumes:
+      - ./uploads:/app/uploads
+      - ./logs:/app/logs
+      - ./static/uploads:/app/static/uploads
+    depends_on:
+      - db
+      - redis
+    networks:
+      - teacher-ai-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # PostgreSQL Database Service
+  db:
+    image: postgres:15-alpine
+    container_name: teacher-ai-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: teacher_ai_enhanced
+      POSTGRES_USER: teacher_ai
+      POSTGRES_PASSWORD: secure_password
+      POSTGRES_INITDB_ARGS: "--encoding=UTF8 --locale=C"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./db_backup:/backup
+    ports:
+      - "5432:5432"
+    networks:
+      - teacher-ai-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U teacher_ai -d teacher_ai_enhanced"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Redis Cache Service
+  redis:
+    image: redis:7-alpine
+    container_name: teacher-ai-redis
+    restart: unless-stopped
+    command: redis-server --appendonly yes --requirepass cache_password
+    volumes:
+      - redis_data:/data
+    ports:
+      - "6379:6379"
+    networks:
+      - teacher-ai-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "--raw", "incr", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Nginx Reverse Proxy (Optional)
+  nginx:
+    image: nginx:alpine
+    container_name: teacher-ai-nginx
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./ssl:/etc/nginx/ssl:ro
+      - ./static:/var/www/static:ro
+    depends_on:
+      - app
+    networks:
+      - teacher-ai-network
+    profiles:
+      - with-nginx
+
+# Named Volumes
+volumes:
+  postgres_data:
+    driver: local
+  redis_data:
+    driver: local
+
+# Networks
+networks:
+  teacher-ai-network:
+    driver: bridge
+
+# Development Override (use with docker-compose.override.yml)
+---
+# docker-compose.override.yml content for development
+version: '3.8'
+
+services:
+  app:
+    build:
+      context: .
+      target: development
+    environment:
+      - FLASK_ENV=development
+      - DATABASE_URL=sqlite:///teacher_ai_enhanced.db
+    volumes:
+      - .:/app
+      - /app/__pycache__
+    command: python app.py
+    ports:
+      - "5000:5000"
+    
+  # Remove database and redis for simple development
+  db:
+    profiles:
+      - full-dev
+    
+  redis:
+    profiles:
+      - full-dev
